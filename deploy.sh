@@ -94,15 +94,18 @@ echo "[1/4] Stopping existing containers..."
 docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" down --remove-orphans
 
 # -----------------------------------------------------------------------------
-# 3. Start the new stack
+# 3. Build the image, then start all containers
 # -----------------------------------------------------------------------------
-echo "[2/4] Starting containers..."
-docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d --build
+echo "[2/4] Building image..."
+docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" build app
+
+echo "[3/4] Starting containers..."
+docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d
 
 # -----------------------------------------------------------------------------
 # 4. Wait for app health check (polls /up endpoint, max 120 s)
 # -----------------------------------------------------------------------------
-echo "[3/4] Waiting for application to become healthy (max ${MAX_WAIT}s)..."
+echo "[4/4] Waiting for application to become healthy (max ${MAX_WAIT}s)..."
 elapsed=0
 until curl -sf "$HEALTH_URL" > /dev/null 2>&1; do
     if [ "$elapsed" -ge "$MAX_WAIT" ]; then
