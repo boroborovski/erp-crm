@@ -1,0 +1,88 @@
+<!-- Minimalist Footer -->
+<footer class="py-12 md:py-16 border-t border-gray-100 dark:border-gray-900 bg-white dark:bg-black">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div
+            class="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8 pb-10 border-b border-gray-100 dark:border-gray-900">
+            <!-- Company Info -->
+            <div class="md:col-span-5 space-y-5">
+                <a href="{{ url('/') }}" class="inline-flex w-fit" aria-label="Home">
+                    @if(config('landing.logo.custom_path'))
+                        <img src="{{ config('landing.logo.custom_path') }}" alt="{{ config('app.name') }}" class="h-8 w-auto" />
+                    @else
+                        <x-brand.logo-lockup size="md" class="text-black dark:text-white" />
+                    @endif
+                </a>
+                <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed max-w-md">
+                    {{ __('landing.footer.description') }}
+                </p>
+            </div>
+
+            <!-- Quick Links Column - Simplified -->
+            <div class="md:col-span-3">
+                <h3 class="font-medium text-xs text-black dark:text-white uppercase tracking-wider mb-4">
+                    {{ __('landing.nav.quick_links') }}
+                </h3>
+                <ul class="space-y-3">
+                    <li>
+                        <a href="{{ url('/') }}"
+                           class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary-400 text-sm transition-colors">
+                            {{ __('landing.nav.home') }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('documentation.index') }}"
+                           class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary-400 text-sm transition-colors">
+                            {{ __('landing.nav.documentation') }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url('/#features') }}"
+                           class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary-400 text-sm transition-colors">
+                            {{ __('landing.nav.features') }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url('/#about') }}"
+                           class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary-400 text-sm transition-colors">
+                            {{ __('landing.nav.about') }}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Legal Links Column - Simplified -->
+            <div class="md:col-span-4">
+                <h3 class="font-medium text-xs text-black dark:text-white uppercase tracking-wider mb-4">
+                    {{ __('landing.nav.support_legal') }}
+                </h3>
+                <ul class="space-y-3">
+                    <li>
+                        <a href="{{ url('privacy-policy') }}"
+                           class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary-400 text-sm transition-colors">
+                            {{ __('landing.nav.privacy_policy') }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url('terms-of-service') }}"
+                           class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary-400 text-sm transition-colors">
+                            {{ __('landing.nav.terms_of_service') }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="mailto:manuk.minasyan1@gmail.com"
+                           class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary-400 text-sm transition-colors">
+                            {{ __('landing.nav.contact_us') }}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Copyright section -->
+        <div class="mt-8 flex flex-col md:flex-row md:justify-between items-center gap-4">
+            <p class="text-gray-500 dark:text-gray-400 text-xs">{!! str_replace(':year', date('Y'), __('landing.footer.copyright')) !!}</p>
+
+            <x-theme-switcher />
+        </div>
+    </div>
+</footer>
