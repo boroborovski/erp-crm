@@ -17,35 +17,16 @@ RUN composer install \
     --ignore-platform-reqs
 
 ###########################################
-# Stage 2: Build frontend assets
-###########################################
-FROM node:22-alpine AS frontend
-
-WORKDIR /app
-
-# Copy package files and install
-COPY package.json package-lock.json ./
-RUN NODE_OPTIONS="--max-old-space-size=512" npm ci --ignore-scripts
-
-# Copy source files needed for build
-COPY vite.config.js ./
-COPY resources ./resources
-COPY public ./public
-COPY app-modules ./app-modules
-
-# Copy vendor for Filament theme CSS
-COPY --from=composer /app/vendor ./vendor
-
-RUN npm run build
-
-###########################################
-# Stage 3: Production image
+# Stage 2: Production image
+# Frontend assets are pre-built and committed
+# to the repository (public/build/) so no
+# Node.js / npm step is needed here.
 ###########################################
 FROM serversideup/php:8.4-fpm-nginx AS production
 
-LABEL org.opencontainers.image.title="Relaticle CRM"
-LABEL org.opencontainers.image.description="Modern, open-source CRM platform"
-LABEL org.opencontainers.image.source="https://github.com/Relaticle/relaticle"
+LABEL org.opencontainers.image.title="ERP CRM"
+LABEL org.opencontainers.image.description="Self-hosted ERP / CRM platform"
+LABEL org.opencontainers.image.source="https://github.com/boroborovski/erp-crm"
 
 # Switch to root to install dependencies
 USER root
@@ -64,14 +45,11 @@ USER www-data
 
 WORKDIR /var/www/html
 
-# Copy application source
+# Copy application source (includes pre-built public/build/)
 COPY --chown=www-data:www-data . .
 
 # Copy vendor from composer stage
 COPY --chown=www-data:www-data --from=composer /app/vendor ./vendor
-
-# Copy built frontend assets
-COPY --chown=www-data:www-data --from=frontend /app/public/build ./public/build
 
 # Generate optimized autoloader
 RUN composer dump-autoload --optimize --no-dev
