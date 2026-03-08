@@ -25,7 +25,7 @@ WORKDIR /app
 
 # Copy package files and install
 COPY package.json package-lock.json ./
-RUN npm ci --ignore-scripts
+RUN NODE_OPTIONS="--max-old-space-size=512" npm ci --ignore-scripts
 
 # Copy source files needed for build
 COPY vite.config.js ./
