@@ -33,6 +33,41 @@ if [ ! -f "$ENV_FILE" ]; then
     exit 1
 fi
 
+# -----------------------------------------------------------------------------
+# Auto-generate secrets if missing or still set to placeholders
+# -----------------------------------------------------------------------------
+generate_secret() {
+    local KEY="$1"
+    local VALUE
+    VALUE=$(openssl rand -hex 24)
+    if grep -q "^${KEY}=" "$ENV_FILE"; then
+        sed -i "s|^${KEY}=.*|${KEY}=\"${VALUE}\"|" "$ENV_FILE"
+    else
+        echo "${KEY}=\"${VALUE}\"" >> "$ENV_FILE"
+    fi
+    echo "  $KEY generated and written to $ENV_FILE"
+}
+
+for VAR in DB_PASSWORD REDIS_PASSWORD; do
+    if grep -qE "^${VAR}=(<CHANGE_ME>|\"<CHANGE_ME>\"|)$" "$ENV_FILE" 2>/dev/null || ! grep -q "^${VAR}=" "$ENV_FILE" 2>/dev/null; then
+        generate_secret "$VAR"
+    fi
+done
+
+# -----------------------------------------------------------------------------
+# Auto-generate APP_KEY if missing or still set to the placeholder
+# -----------------------------------------------------------------------------
+if grep -qE '^APP_KEY=("base64:abc\+def/ghi=="|""|)$' "$ENV_FILE" 2>/dev/null || ! grep -q '^APP_KEY=' "$ENV_FILE" 2>/dev/null; then
+    echo "Generating APP_KEY..."
+    NEW_KEY="base64:$(openssl rand -base64 32)"
+    if grep -q '^APP_KEY=' "$ENV_FILE"; then
+        sed -i "s|^APP_KEY=.*|APP_KEY=\"$NEW_KEY\"|" "$ENV_FILE"
+    else
+        echo "APP_KEY=\"$NEW_KEY\"" >> "$ENV_FILE"
+    fi
+    echo "APP_KEY written to $ENV_FILE"
+fi
+
 # Source the env file to read APP_URL for the health check
 set -a
 # shellcheck disable=SC1090
