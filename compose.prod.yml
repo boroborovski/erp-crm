@@ -14,7 +14,11 @@ services:
         condition: service_healthy
 
   app:
-    image: ${IMAGE_NAME:-ghcr.io/relaticle/relaticle:latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: ${IMAGE_NAME:-erp-crm:latest}
     restart: always
     environment:
       APP_NAME: ${APP_NAME:-Relaticle}
@@ -97,7 +101,7 @@ services:
       start_period: 60s
 
   horizon:
-    image: ${IMAGE_NAME:-ghcr.io/relaticle/relaticle:latest}
+    image: ${IMAGE_NAME:-erp-crm:latest}
     restart: always
     command: ["php", "/var/www/html/artisan", "horizon"]
     stop_signal: SIGTERM
@@ -160,7 +164,7 @@ services:
       start_period: 10s
 
   scheduler:
-    image: ${IMAGE_NAME:-ghcr.io/relaticle/relaticle:latest}
+    image: ${IMAGE_NAME:-erp-crm:latest}
     restart: always
     command: ["php", "/var/www/html/artisan", "schedule:work"]
     stop_signal: SIGTERM
