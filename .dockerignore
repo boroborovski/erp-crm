@@ -3,6 +3,7 @@
 .gitignore
 .gitattributes
 .githooks
+.github
 
 # IDE
 .idea
@@ -15,7 +16,6 @@
 /node_modules
 
 # Build artifacts
-/public/build
 /public/hot
 /public/storage
 

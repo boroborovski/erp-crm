@@ -18,6 +18,15 @@ ENV_FILE=".env"
 HEALTH_URL=""
 MAX_WAIT=120
 
+# Pass --profile nginx as argument to include the bundled nginx reverse proxy.
+# Example: bash deploy.sh --profile nginx
+COMPOSE_PROFILES=""
+for arg in "$@"; do
+    if [ "$arg" = "--profile" ] || [ "$arg" = "nginx" ]; then
+        COMPOSE_PROFILES="--profile nginx"
+    fi
+done
+
 # -----------------------------------------------------------------------------
 # 1. Check .env exists
 # -----------------------------------------------------------------------------
@@ -91,16 +100,16 @@ echo ""
 # 2. Bring down the existing stack (remove orphaned containers)
 # -----------------------------------------------------------------------------
 echo "[1/4] Stopping existing containers..."
-docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" down --remove-orphans
+docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" $COMPOSE_PROFILES down --remove-orphans
 
 # -----------------------------------------------------------------------------
-# 3. Build the image, then start all containers
+# 3. Pull the pre-built image from GHCR, then start all containers
 # -----------------------------------------------------------------------------
-echo "[2/4] Building image..."
-docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" build app
+echo "[2/4] Pulling latest image from registry..."
+docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" pull app
 
 echo "[3/4] Starting containers..."
-docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d
+docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" $COMPOSE_PROFILES up -d
 
 # -----------------------------------------------------------------------------
 # 4. Wait for app health check (polls /up endpoint, max 120 s)
